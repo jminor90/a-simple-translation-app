@@ -1,7 +1,7 @@
 const $language1Input = $('#language1Input')
 
 const $userTranslateInput = $('#userTranslateInput')
-const $submitBtn = $('#submitButton')
+const $LanguageSubmit = $('#LanguageSubmit')
 
 const $translateResult = $('#translateResult')
 const $CaptPicard= $('#CaptPicard')
@@ -11,6 +11,11 @@ const translateAPIkey = `AIzaSyBD1YPYxIGxb0Fs4qjXKgba41XhADpNF-8`;
 const cloudURL = `https://translation.googleapis.com/language/translate/v2/languages?key=${translateAPIkey}&target=en`
 
 let language1Input = $language1Input.val().trim()
+
+const $countryInput = $('#countryInput')
+const $destinationSubmit = $('#destinationSubmit')
+const $container = $('.container')
+
 
 
 
@@ -75,7 +80,7 @@ function translateAPI(foundLang) {
 }
 
 
-function buttonFunction(event) {
+function languageFunction(event) {
   event.preventDefault()
 
   const seachBarVal = $language1Input.val()
@@ -104,4 +109,99 @@ function renderResult (translateData){
   //console.log("RenderResult happening here")
 }
 
-$submitBtn.on("click", buttonFunction)
+function destinationFunction(event) {
+  event.preventDefault()
+  let countryInput = $countryInput.val().trim()
+
+
+  console.log(countryInput)
+  getRestCountryAPI(countryInput)
+
+  //console.log("destinationFunction clicked")
+}
+
+
+function getRestCountryAPI(countryInput) {
+
+  const countriesURL = `https://restcountries.com/v3.1/name/${countryInput}`;
+
+  fetch (countriesURL)
+  .then(function(serverResponse) {
+    if (serverResponse.status !== 200 ) {
+      alert("UH OH"+serverResponse.status)
+      console.log("uh oh"+serverResponse.status)
+    } else {
+      return serverResponse.json();
+    }
+  })
+
+  .then (function(data) {
+
+    console.log(data)
+
+    dataFunction(data)
+
+  })
+}
+
+
+function dataFunction(data) {
+
+  $container.html('');
+
+  //VARIABLES 
+  const dataCurrencies = JSON.stringify( data[0].currencies).split("\"")[1]
+  const dataLanguage = JSON.stringify(data[0].languages).split("\"")[3]
+  const dataLanguage2 = JSON.stringify(data[0].languages).split("\"")[7]
+  const dataFlag = data[0].flags.png
+
+  // const dataCurrenciesStr = JSON.stringify (Object.getOwnPropertyNames(dataCurrencies)[0]).slice(1,4)
+  
+  
+  console.log(dataCurrencies)
+  console.log('Language 1 '+dataLanguage)
+  console.log('Language 2 '+dataLanguage2)
+  console.log(dataFlag)
+
+  $language1Input.val(dataLanguage)
+  
+  const $pCurrency = $('<p>')
+  const $pLanguage1 = $('<p>')
+  const $pLanguage2 = $('<p>')
+  const $imgFlag = $('<img>')
+  const $divData = $('<div>')
+
+  //ATTRIBUTES CLASSES TEXT CONTENT
+  $pCurrency.text(`Currency: `+dataCurrencies)
+  $pLanguage1.text(`Language: `+dataLanguage)
+  if (!dataLanguage2) {
+    $pLanguage2.text(``);
+  } else { 
+  $pLanguage2.text(`Language 2: `+dataLanguage2)
+  
+}
+
+  $imgFlag.attr("src", dataFlag)
+
+  //APPENDING!
+  $container.append($divData)
+  $divData.append($pCurrency)
+  $divData.append($pLanguage1)
+  $divData.append($pLanguage2)
+  $divData.append($imgFlag)
+
+}
+
+function buttonFunction() {
+  const seachBarVal = $searchBar.val()
+  console.log("Button Clicked")
+
+  console.log(seachBarVal)
+  getTranslateAPI(seachBarVal)
+}
+
+
+
+$LanguageSubmit.on("click", languageFunction)
+
+$destinationSubmit.on("click", destinationFunction)
