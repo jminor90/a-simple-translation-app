@@ -12,6 +12,8 @@ const cloudURL = `https://translation.googleapis.com/language/translate/v2/langu
 
 let language1Input = $language1Input.val().trim()
 
+
+
 const $countryInput = $('#countryInput')
 const $destinationSubmit = $('#destinationSubmit')
 const $container = $('.container')
