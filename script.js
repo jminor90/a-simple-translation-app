@@ -3,11 +3,15 @@ const $language1Input = $('#language1Input')
 const $userTranslateInput = $('#userTranslateInput')
 const $submitBtn = $('#submitButton')
 
+const $translateResult = $('#translateResult')
+const $CaptPicard= $('#CaptPicard')
+
 const translateAPIkey = `AIzaSyBD1YPYxIGxb0Fs4qjXKgba41XhADpNF-8`;
 
 const cloudURL = `https://translation.googleapis.com/language/translate/v2/languages?key=${translateAPIkey}&target=en`
 
-let userSearch = $language1Input.val()
+let language1Input = $language1Input.val().trim()
+
 
 
 function nametoCodeAPI(seachBarVal) {
@@ -42,15 +46,15 @@ function nameToCode(data, SteveSearchBar) {
 }
 
 function translateAPI(foundLang) {
-
-  //console.log(foundLang)
+  let userTranslateInput = $userTranslateInput.val().trim()
+  console.log(userTranslateInput)
 
   const translateURL = `https://translation.googleapis.com/language/translate/v2?key=${translateAPIkey}`
 
   fetch (translateURL, {
     method: "POST",
     body: JSON.stringify({
-      q: "Space: the final frontier",
+      q: userTranslateInput,
       source: "en",
       target: foundLang,
       format: "text"
@@ -65,7 +69,8 @@ function translateAPI(foundLang) {
     }
   })
   .then (function(translateData) {
-    console.log(translateData)
+    //console.log(translateData)
+    renderResult(translateData)
   })
 }
 
@@ -87,6 +92,16 @@ function buttonFunction(event) {
   //console.log('The user entered: '+seachBarVal)
 
   
+}
+
+function renderResult (translateData){
+
+  let translateResult = translateData.data.translations[0].translatedText
+
+  $translateResult.text(translateResult)
+  console.log(translateResult)
+  //console.log(translateResult.data.translations[0].translatedText)
+  //console.log("RenderResult happening here")
 }
 
 $submitBtn.on("click", buttonFunction)
